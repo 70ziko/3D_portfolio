@@ -2,6 +2,16 @@ import './style.css'
 import * as THREE from 'three';
 import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls.js';
 
+function animate() {
+    requestAnimationFrame(animate);
+
+    torus.rotation.x += 0.01;
+    torus.rotation.y += 0.005;
+    torus.rotation.z += 0.01;
+
+    renderer.render(scene, camera);
+}
+
 const scene = new THREE.Scene();
 
 const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
@@ -23,6 +33,9 @@ const torus = new THREE.Mesh(geometry, material);
 
 scene.add(torus);
 
+
+animate();
+
 const pointLight = new THREE.PointLight(0xffffff);
 pointLight.position.set(5, 5, 5);
 
@@ -40,8 +53,11 @@ function addStar() {
     const material = new THREE.MeshStandardMaterial({ color: 0xffffff });
     const star = new THREE.Mesh(geometry, material);
 
+    // const pointLight = new THREE.PointLight(0xffffff)
+
     const [x, y, z] = Array(3).fill().map(() => THREE.MathUtils.randFloatSpread(100));
 
+    // pointLight.position.set(x,y,z);
     star.position.set(x, y, z);
     scene.add(star);
 }
@@ -52,18 +68,6 @@ Array(200).fill().forEach(addStar);
 const spaceTexture = new THREE.TextureLoader().load('/space.jpg');
 scene.background = spaceTexture;
 
-
-function animate() {
-    requestAnimationFrame(animate);
-
-    torus.rotation.x += 0.01;
-    torus.rotation.y += 0.005;
-    torus.rotation.z += 0.01;
-
-    renderer.render(scene, camera);
-}
-
-animate();
 
 // Avatar
 
@@ -76,9 +80,9 @@ const patryk = new THREE.Mesh(
 
 scene.add(patryk);
 
-// Planet
+// Earth
 
-const planetTexture = new THREE.TextureLoader().load('/planet.jpg');
+const planetTexture = new THREE.TextureLoader().load('/earth.png');
 
 const planet = new THREE.Mesh(
     new THREE.SphereGeometry(3, 32, 32),
@@ -86,3 +90,20 @@ const planet = new THREE.Mesh(
 );
 
 scene.add(planet);
+
+planet.position.z = 30;
+planet.position.setX(-10);
+
+function moveCamera() {
+    const t = document.body.getBoundingClientRect().top;
+    planet.rotation.x += 0.05;
+    planet.rotation.y += 0.075;
+    planet.rotation.z += 0.05;
+
+    camera.position.z = t * -0.01;
+    camera.position.x = t * -0.0002;
+    camera.position.y = t * -0.0002;
+}
+
+document.body.onscroll = moveCamera;
+
